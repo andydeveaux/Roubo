@@ -1,0 +1,23 @@
+TODO v1.0
+=============
+
+9/3/2012
+-------------
+[ ] Define data structures and behaviors
+    + table
+    + row
+    + cell
+    + column
+[ ] CLI
+[ ] Formatter
+[ ] Formatter Configuration
+    + border width
+    + border character(s)
+    + maximum table width
+    + maximum column width
+        + wordwrap
+    + center column
+    + cell separator
+    + row separator
+    + output file
+    + input file
