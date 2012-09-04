@@ -37,12 +37,17 @@ namespace Roubo
         
         Row*    GetRow(int row_index);
         Column* GetColumn(int column_index);
+        void    SetCell(int row_index, int column_index, std::string data);
 
     private:
         Column** mColumns;
         Row**    mRows;
         int mNumberOfColumns;
         int mNumberOfRows;
+
+        // Array range checking
+        bool IsValidRowIndex(int index);
+        bool IsValidColumnIndex(int index);
 
         // cleanup routines
         void DeleteColumnPointers();

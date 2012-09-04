@@ -72,20 +72,47 @@ namespace Roubo
         return mRows[mNumberOfRows - 1];
     }
 
+    Row* Table::GetRow(int row_index)
+    {
+        if (!IsValidRowIndex(row_index))
+            throw std::exception("Invalid row index");
+
+        return mRows[row_index];
+    }
+
     Column* Table::GetColumn(int column_index)
     {
-        if (column_index < 0 || column_index >= mNumberOfColumns)
+        if (!IsValidColumnIndex(column_index))
             throw std::exception("Invalid column index");
 
         return mColumns[column_index];
     }
 
-    Row* Table::GetRow(int row_index)
+    void Table::SetCell(int row_index, int column_index, std::string data)
     {
-        if (row_index < 0 || row_index >= mNumberOfColumns)
+        if (!IsValidRowIndex(row_index))
             throw std::exception("Invalid row index");
 
-        return mRows[row_index];
+        else if (!IsValidColumnIndex(column_index))
+            throw std::exception("Invalid column index");
+
+        mRows[row_index]->SetCell(column_index, data);
+    }
+
+    bool Table::IsValidRowIndex(int index)
+    {
+        if (index < 0 || index >= mNumberOfRows)
+            return false;
+
+        return true;
+    }
+
+    bool Table::IsValidColumnIndex(int index)
+    {
+        if (index < 0 || index >= mNumberOfColumns)
+            return false;
+
+        return true;
     }
 
     /**

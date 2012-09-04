@@ -74,9 +74,22 @@ namespace Roubo
         for (int i=0; i<mNumberOfCells; i++)
             temp[i] = mCells[i];
 
-        DeleteRow();
+        DeleteCellPointers();
         mNumberOfCells += 1;
         mCells = temp;
+    }
+
+    /**
+     * @note Doesn't delete the objects!
+     */
+    void Row::DeleteCellPointers()
+    {
+        if (mNumberOfCells > 0)
+            delete[] mCells;
+        else
+            delete mCells;
+
+        mCells = NULL;
     }
 
     void Row::DeleteRow()
@@ -84,11 +97,6 @@ namespace Roubo
         for (int i=0; i<mNumberOfCells; i++)
             delete mCells[i];
 
-        if (mNumberOfCells > 0)
-            delete[] mCells;
-        else
-            delete mCells;
-
-        mCells = NULL;
+        DeleteCellPointers();
     }
 }

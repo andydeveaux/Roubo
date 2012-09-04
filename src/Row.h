@@ -39,9 +39,10 @@ namespace Roubo
 
     private:
         int mNumberOfCells;
-        Cell** mCells;          // array of cell pointers
+        Cell** mCells;                  // array of cell pointers
         
-        void ExpandRow();     // expands the cell array
-        void DeleteRow();     // used for cleanup
+        void ExpandRow();               // expands the cell array
+        void DeleteCellPointers();      // deletes the cell pointers (not the objects!)
+        void DeleteRow();               // used for cleanup
     };
 }
