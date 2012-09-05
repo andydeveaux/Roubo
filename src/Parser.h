@@ -1,6 +1,6 @@
 /**
- * @file Common.h
- * @brief Commonly used functions
+ * @file Parser.h
+ * @brief Defintion of the Parser class
  *
  * ------------------------------------------------------------------------
  * Copyright 2012 Syroglyph
@@ -22,27 +22,25 @@
 #pragma once
 
 #include <string>
-#include <iterator>
 #include "utf8.h"
 
 namespace Roubo
 {
-    class Common
+    class Parser
     {
     public:
-        static std::string ValidateUTF8(std::string str)
-        {
-            std::string temp;
-            utf8::replace_invalid(str.begin(), str.end(), back_inserter(temp));
-            return temp;
-        }
+        Parser(std::string str, bool command);
+        std::string GetNext();
+        void SetString(std::string str);            // set new parse string
+        bool SetCellSeparator(std::string delimiter);
+        bool SetLabelPrefix(unsigned char prefix);
+        bool IsLabelPrefix(const std::string& str);
 
-        /**
-         * Returns length between two index positions
-         */
-        static int StringDistance(int start, int end)
-        {
-            return ((end+1) - start);
-        }
+    private:
+        std::string mString;
+        int mPointerIndex;                          // current index the parser is at in the string
+        bool mCommandMode;                          // command or data mode
+        std::string mCellSeparator;                 // default is tab
+        unsigned char mLabelPrefix;                 // character that indicates header label (default='@'), exists so that they are optional
     };
 }

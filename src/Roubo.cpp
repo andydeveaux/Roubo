@@ -22,8 +22,10 @@
 #include <iostream>
 #include "Table.h"
 #include "FileHandler.h"
+#include "Parser.h"
 
 int main(int argc, char** argv)
 {
+    std::cin.get();
     return 0;
 }

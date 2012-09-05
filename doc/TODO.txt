@@ -9,6 +9,9 @@ TODO v1.0
     + cell
     + column
 [ ] CLI
+[ ] Parser
+    + CLI commands
+    + file/keyboard data
 [ ] Formatter
 [ ] Formatter Configuration
     + border width
