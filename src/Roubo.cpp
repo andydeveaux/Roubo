@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include "Table.h"
+#include "FileHandler.h"
 
 int main(int argc, char** argv)
 {

@@ -1,6 +1,6 @@
 /**
- * @file Common.h
- * @brief Commonly used functions
+ * @file FileHandler.h
+ * @brief Defintion of the Column class
  *
  * ------------------------------------------------------------------------
  * Copyright 2012 Syroglyph
@@ -21,20 +21,26 @@
 
 #pragma once
 
+#include <fstream>
 #include <string>
-#include <iterator>
-#include "utf8.h"
 
 namespace Roubo
 {
-    class Common
+    class FileHandler
     {
     public:
-        static std::string ValidateUTF8(std::string str)
-        {
-            std::string temp;
-            utf8::replace_invalid(str.begin(), str.end(), back_inserter(temp));
-            return temp;
-        }
+        FileHandler();
+        ~FileHandler();
+
+        bool OpenFile(std::string filename, bool write); // opens a file
+        std::string GetNextLine();                       // gets the next line in the file
+        bool Write(std::string data);                   // writes to currently open file
+        void Close();                                   // closes file and calls cleanup methods
+
+    private:
+        std::ifstream* mReadStream;
+        std::ofstream* mWriteStream;
+        void DestroyReadStream();
+        void DestroyWriteStream();
     };
 }
