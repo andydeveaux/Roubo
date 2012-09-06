@@ -36,14 +36,17 @@ namespace Roubo
         void Run(int& argc, char** argv);
 
     private:
-        Table mTableObject;
+        Table       mTableObject;
         FileHandler mFileHandlerObject;
-        Parser* mParserObject;
+        Parser*     mParserObject;
         std::string mOutputFilename;
 
-        void DisplayHelp();
-        void DisplayCommands();
-        void DisplayCommandHelp(char* command);
+        void DisplayHelp();                             // Displays help message
+        void DisplayCommands();                         // Displays command list
+        void DisplayCommandHelp(char* command);         // Displays help about a specific command
+        void StartPrompt();                             // Implements the CLI
+        void ConfigPrompt();                            // Prompts for formatter settings
+        void TableDataPrompt();                         // Prompt for table data
         bool IsValidFilename(char* name);
     };
 }

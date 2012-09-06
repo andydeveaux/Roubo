@@ -33,6 +33,11 @@ namespace Roubo
         mLabelPrefix   = '@';
     }
 
+    Parser::Parser(bool command)
+    {
+        Parser::Parser("", command);
+    }
+
     std::string Parser::GetNext()
     {
         std::string temp;
@@ -46,7 +51,7 @@ namespace Roubo
             // found
             if (find != std::string::npos)
             {
-                temp = mString.substr(mPointerIndex, Common::StringDistance(mPointerIndex, find));
+                temp = mString.substr(mPointerIndex, Common::StringDistance(mPointerIndex, find - 1));
                 mPointerIndex = find + 1;
             }
             // not found
@@ -65,7 +70,7 @@ namespace Roubo
             // found
             if (find != std::string::npos)
             {
-                temp = mString.substr(mPointerIndex, Common::StringDistance(mPointerIndex, find));
+                temp = mString.substr(mPointerIndex, Common::StringDistance(mPointerIndex, find - 1));
                 mPointerIndex = find + 1;
             }
             // not found

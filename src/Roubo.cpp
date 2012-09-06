@@ -74,7 +74,7 @@ namespace Roubo
         }
 
         // CLI starts here
-        cin.get();
+        StartPrompt();
     }
 
     void Roubo::DisplayHelp()
@@ -92,14 +92,16 @@ namespace Roubo
         cout << "Use HELP [command] for detailed information\n\nCommands\n-----------------\n";
         cout << "INPUT\t\tBegins accepting input from keyboard or file\n";
         cout << "OUTPUT\t\tProcesses the input and spits out a table\n";
-        cout << "SET\t\tConfigures a setting with the formatter\n";
+        cout << "CONFIG\t\tSteps through configuration prompt\n";
         cout << "SETTINGS\tShows current settings\n";
+        cout << "EXIT\t\tExits the program\n\n";
     }
 
     void Roubo::DisplayCommandHelp(char* command)
     {
         using namespace std;
         string cmd = Common::ToUpper(string(command));
+        cout << "\n";
         if (cmd == "INPUT")
         {
             cout << "Begins accepting input from the keyboard, unless a filename is specified.\n\n";
@@ -112,12 +114,27 @@ namespace Roubo
             cout << "Usage: OUTPUT [filename]";
         }
 
-        else if (cmd == "SET")
+        else if (cmd == "CONFIG")
         {
-            cout << "Configures a formatter setting\n\n";
-            cout << "Usage: SET setting [value1, ...]\n\n";
-            cout << "Settings\n-----------------\n";
-            cout << "";
+            cout << "Steps user through the formatter and parser settings\n\n";
+            cout << "Usage: CONFIG\n\n";
+
+            cout << "Formatter Settings\n-----------------\n";
+            cout << "Border width:\t\t\t\tIntegral value; number of characters\n";
+            cout << "Border character (horizontal): \t\tHorizontal border character\n";
+            cout << "Border character (vertical):\t\tVertical border character\n";
+            cout << "Border character(corner):\t\tCorner border character\n";
+            cout << "Border character (header bottom):\tThe bottom of the header row\n";
+            cout << "Max column width:\t\t\tWidth of column before table word wraps\n\n";
+
+            cout << "Parser Settings\n-----------------\n";
+            cout << "Cell delimiter:\t\t\t\tCharacter used to separate cell data\n";
+            cout << "Header label prefix:\t\t\tPrefix that indicates a header label";
+        }
+
+        else if (cmd == "SETTINGS")
+        {
+            cout << "Shows current configuration settings";
         }
 
         else
@@ -126,6 +143,100 @@ namespace Roubo
         }
 
         cout << "\n\n";
+    }
+
+    /**
+     * Here be prompt!
+     */
+    void Roubo::StartPrompt()
+    {
+        using namespace std;
+        string input;
+        string upper;
+        mParserObject = new Parser(true);
+        do
+        {
+            cout<<" >> ";
+            getline(cin, input);
+           
+            mParserObject->SetString(input);
+            string cmd = Common::ToUpper(mParserObject->GetNext());
+
+            if (cmd == "QUIT" || cmd == "EXIT")
+            {
+                break;
+            }
+
+            else if (cmd == "HELP")
+            {
+                string value = Common::ToUpper(mParserObject->GetNext());
+                if (!value.empty())
+                    DisplayCommandHelp(const_cast<char*>(value.c_str()));
+                else
+                    DisplayCommands();
+            }
+
+            else if (cmd == "INPUT")
+            {
+                string value = mParserObject->GetNext();
+                if (value.empty())
+                {
+                    TableDataPrompt();
+                }
+
+                else
+                {
+                    mFileHandlerObject.Close();
+                    if (!mFileHandlerObject.OpenFile(value, false))
+                    {
+                        cout << "There was an error opening the file\n";
+                        continue;
+                    }
+                }
+            }
+
+            else if (cmd == "OUTPUT")
+            {
+            }
+
+            else if (cmd == "CONFIG")
+            {
+                ConfigPrompt();
+            }
+
+        } while (cin);
+    }
+
+    /**
+     * Formatter configuration prompt
+     */
+    void Roubo::ConfigPrompt()
+    {
+        using namespace std;
+        string input;
+    }
+
+    /**
+     * Prompt for table data
+     */
+    void Roubo::TableDataPrompt()
+    {
+        using namespace std;
+        cout << "\nInput Mode (CTRL+Z then ENTER to end)\n\n";
+
+        string input;
+        do
+        {
+            cout << " ::> ";
+            getline(cin, input);
+
+            // Strip the EOF character if present
+            if (!input.empty() && input.at(input.length() - 1) == 26)
+                input = input.substr(0, input.length() - 1);
+
+        } while (cin);
+
+        cin.clear();            // Prevent outer loop from exiting
     }
 
     bool Roubo::IsValidFilename(char* name)

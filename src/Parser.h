@@ -30,6 +30,7 @@ namespace Roubo
     {
     public:
         Parser(std::string str, bool command);
+        Parser(bool command);
         std::string GetNext();
         void SetString(std::string str);            // set new parse string
         bool SetCellSeparator(std::string delimiter);
