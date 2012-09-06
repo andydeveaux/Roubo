@@ -4,7 +4,8 @@ set (ROUBO_HEADERS Table.h
                    Column.h
                    Common.h
                    FileHandler.h
-                   Parser.h)
+                   Parser.h
+                   Roubo.h)
 
 set (ROUBO_SOURCE Roubo.cpp
                   Cell.cpp
@@ -12,7 +13,9 @@ set (ROUBO_SOURCE Roubo.cpp
                   Column.cpp
                   Table.cpp
                   FileHandler.cpp
-                  Parser.cpp)
+                  Parser.cpp
+                  Roubo.cpp
+                  Main.cpp)
 
 source_group (Headers FILES ${ROUBO_HEADERS})
-add_executable(Roubo ${ROUBO_SOURCE} ${ROUBO_HEADERS})
+add_executable(roubo ${ROUBO_SOURCE} ${ROUBO_HEADERS})

@@ -44,5 +44,24 @@ namespace Roubo
         {
             return ((end+1) - start);
         }
+
+        /**
+         * Returns an uppercase version of a string
+         */
+        static std::string ToUpper(std::string str)
+        {
+            std::string temp;
+            int length = str.length();
+            for (int i=0; i<length; i++)
+            {
+                unsigned char c = str.at(i);
+                if (c >= 97 && c <= 122)
+                    temp += unsigned char(c - 32);
+                else
+                    temp += c;
+            }
+
+            return temp;
+        }
     };
 }

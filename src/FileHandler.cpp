@@ -98,6 +98,7 @@ namespace Roubo
 
         *mWriteStream << data;
         mWriteStream->flush();
+        return true;
     }
 
     void FileHandler::Close()
