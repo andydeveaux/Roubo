@@ -42,6 +42,7 @@ namespace Roubo
         int mPointerIndex;                          // current index the parser is at in the string
         bool mCommandMode;                          // command or data mode
         std::string mCellSeparator;                 // default is tab
+        bool mUseLabelPrefix;                       // enables header label prefix
         unsigned char mLabelPrefix;                 // character that indicates header label (default='@'), exists so that they are optional
     };
 }

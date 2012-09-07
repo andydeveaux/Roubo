@@ -94,6 +94,7 @@ namespace Roubo
         cout << "OUTPUT\t\tProcesses the input and spits out a table\n";
         cout << "CONFIG\t\tSteps through configuration prompt\n";
         cout << "SETTINGS\tShows current settings\n";
+        cout << "CLEAR\t\tDeletes the table from memory\n";
         cout << "EXIT\t\tExits the program\n\n";
     }
 
@@ -118,23 +119,32 @@ namespace Roubo
         {
             cout << "Steps user through the formatter and parser settings\n\n";
             cout << "Usage: CONFIG\n\n";
+            cout << "NOTE: Leave any setting blank for default value.\n";
+            cout << "      Use SETTINGS command to show current configuration.\n\n";
 
             cout << "Formatter Settings\n-----------------\n";
-            cout << "Border width:\t\t\t\tIntegral value; number of characters\n";
-            cout << "Border character (horizontal): \t\tHorizontal border character\n";
-            cout << "Border character (vertical):\t\tVertical border character\n";
-            cout << "Border character(corner):\t\tCorner border character\n";
-            cout << "Border character (header bottom):\tThe bottom of the header row\n";
-            cout << "Max column width:\t\t\tWidth of column before table word wraps\n\n";
+            cout << "Border width:\t\t\tIntegral value; number of characters\n";
+            cout << "Border char - horizontal:\thorizontal border character\n";
+            cout << "Border char - vertical:\t\tVertical border character\n";
+            cout << "Border char - corner:\t\tCorner border character\n";
+            cout << "Border char - header separator:\tThe bottom of the header row\n";
+            cout << "Border char - row separator:\tInserted between rows\n";
+            cout << "Max column width:\t\tWidth of column before word wrap is applied\n\n";
 
             cout << "Parser Settings\n-----------------\n";
-            cout << "Cell delimiter:\t\t\t\tCharacter used to separate cell data\n";
-            cout << "Header label prefix:\t\t\tPrefix that indicates a header label";
+            cout << "Cell delimiter:\t\t\tCharacter used to separate cell data\n";
+            cout << "Enable header label prefix:\tMakes header row optional\n";
+            cout << "Header label prefix:\t\tPrefix that indicates a header row\n\n";
         }
 
         else if (cmd == "SETTINGS")
         {
             cout << "Shows current configuration settings";
+        }
+
+        else if (cmd == "CLEAR")
+        {
+            cout << "Deletes the entire table from memory";
         }
 
         else
@@ -204,6 +214,21 @@ namespace Roubo
                 ConfigPrompt();
             }
 
+            else if (cmd == "SETTINGS")
+            {
+            }
+
+            else if (cmd == "CLEAR")
+            {
+                mTableObject.Clear();
+                cout << "\nCleared\n\n";
+            }
+
+            else
+            {
+                cout << "\nInvalid command\n\n";
+            }
+
         } while (cin);
     }
 
@@ -225,17 +250,44 @@ namespace Roubo
         cout << "\nInput Mode (CTRL+Z then ENTER to end)\n\n";
 
         string input;
+        Parser data_parser(false);
+
+        int row = 0;
+        bool loop = true;
         do
         {
+            cout << mTableObject.GetNumberOfRows();
             cout << " ::> ";
             getline(cin, input);
 
             // Strip the EOF character if present
             if (!input.empty() && input.at(input.length() - 1) == 26)
+            {
                 input = input.substr(0, input.length() - 1);
+                loop = false;
+            }
 
-        } while (cin);
+            if (input.empty())
+                continue;
 
+            data_parser.SetString(input);
+            string next;
+            mTableObject.AddRow();
+
+            int column = 0;
+            while (!(next = data_parser.GetNext()).empty())
+            {
+                if (mTableObject.GetNumberOfColumns() <= column)
+                    mTableObject.AddColumn();
+
+                mTableObject.SetCell(row, column, next);
+                column += 1;
+            }
+
+            row += 1;
+        } while (cin && loop);
+
+        cout << "\n";
         cin.clear();            // Prevent outer loop from exiting
     }
 

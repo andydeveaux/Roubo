@@ -35,7 +35,11 @@ namespace Roubo
 
     Parser::Parser(bool command)
     {
-        Parser::Parser("", command);
+        SetString("");
+        mCommandMode   = command;
+        mPointerIndex  = 0;
+        mCellSeparator = "\t";
+        mLabelPrefix   = '@';
     }
 
     std::string Parser::GetNext()

@@ -56,6 +56,14 @@ namespace Roubo
         mCells[mNumberOfCells - 1] = c;
     }
 
+    Cell* Row::GetCell(int column)
+    {
+        if (column < 0 || column >= mNumberOfCells)
+            throw std::exception("Invalid column index");
+
+        return mCells[column];
+    }
+
     /**
      * @note column is zero based index
      */

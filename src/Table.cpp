@@ -88,6 +88,16 @@ namespace Roubo
         return mColumns[column_index];
     }
 
+    int Table::GetNumberOfRows()
+    {
+        return mNumberOfRows;
+    }
+
+    int Table::GetNumberOfColumns()
+    {
+        return mNumberOfColumns;
+    }
+
     void Table::SetCell(int row_index, int column_index, std::string data)
     {
         if (!IsValidRowIndex(row_index))
@@ -97,6 +107,12 @@ namespace Roubo
             throw std::exception("Invalid column index");
 
         mRows[row_index]->SetCell(column_index, data);
+    }
+
+    void Table::Clear()
+    {
+        DeleteAllRows();
+        DeleteAllColumns();
     }
 
     bool Table::IsValidRowIndex(int index)
@@ -124,6 +140,7 @@ namespace Roubo
             delete mColumns[i];
 
         DeleteColumnPointers();
+        mNumberOfColumns = 0;
     }
 
     void Table::DeleteColumnPointers()
@@ -146,6 +163,7 @@ namespace Roubo
             delete mRows[i];
 
         DeleteRowPointers();
+        mNumberOfRows = 0;
     }
 
     void Table::DeleteRowPointers()

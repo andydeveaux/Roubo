@@ -37,7 +37,10 @@ namespace Roubo
         
         Row*    GetRow(int row_index);
         Column* GetColumn(int column_index);
+        int     GetNumberOfRows();
+        int     GetNumberOfColumns();
         void    SetCell(int row_index, int column_index, std::string data);
+        void    Clear();
 
     private:
         Column** mColumns;

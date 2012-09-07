@@ -35,7 +35,8 @@ namespace Roubo
  
         void AddCell();                                     // adds new cell
         void AppendCell(Cell* c);                           // appends existing cell
-        bool SetCell(int column, std::string data);         // updates specific cell data
+        Cell* GetCell(int column);                          // returns pointer to cell in row
+        bool  SetCell(int column, std::string data);         // updates specific cell data
 
     private:
         int mNumberOfCells;
