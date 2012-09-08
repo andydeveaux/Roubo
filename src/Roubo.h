@@ -24,6 +24,7 @@
 #include "Table.h"
 #include "FileHandler.h"
 #include "Parser.h"
+#include "Formatter.h"
 
 namespace Roubo
 {
@@ -40,6 +41,7 @@ namespace Roubo
         FileHandler mFileHandlerObject;
         Parser*     mParserObject;
         std::string mOutputFilename;
+        Formatter   mFormatterObject;
 
         void DisplayHelp();                             // Displays help message
         void DisplayCommands();                         // Displays command list
@@ -47,6 +49,7 @@ namespace Roubo
         void StartPrompt();                             // Implements the CLI
         void ConfigPrompt();                            // Prompts for formatter settings
         void TableDataPrompt();                         // Prompt for table data
+        void ProcessFile();                             // Parses a loaded file
         bool IsValidFilename(char* name);
     };
 }

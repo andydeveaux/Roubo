@@ -65,6 +65,8 @@ namespace Roubo
 
                     else if (argc == 3)
                         throw exception("Invalid output filename specified");
+
+                    ProcessFile();
                 }
             }
         }
@@ -129,7 +131,8 @@ namespace Roubo
             cout << "Border char - corner:\t\tCorner border character\n";
             cout << "Border char - header separator:\tThe bottom of the header row\n";
             cout << "Border char - row separator:\tInserted between rows\n";
-            cout << "Max column width:\t\tWidth of column before word wrap is applied\n\n";
+            cout << "Max column width:\t\tWidth of column before word wrap is applied\n";
+            cout << "Center data:\t\t\tCenters all data and not just headers\n\n";
 
             cout << "Parser Settings\n-----------------\n";
             cout << "Cell delimiter:\t\t\tCharacter used to separate cell data\n";
@@ -202,11 +205,31 @@ namespace Roubo
                         cout << "There was an error opening the file\n";
                         continue;
                     }
+
+                    mTableObject.Clear();
+                    ProcessFile();
+                    mFileHandlerObject.Close();
                 }
             }
 
             else if (cmd == "OUTPUT")
             {
+                string file = mParserObject->GetNext();
+                if (!file.empty())
+                {
+                    if (!mFileHandlerObject.OpenFile(file, true))
+                    {
+                        cout << "There was an error opening the output file\n";
+                        continue;
+                    }
+
+                    mFormatterObject.Output(mFileHandlerObject, mTableObject);
+                }
+
+                else
+                {
+                    mFormatterObject.Output(mTableObject);
+                }
             }
 
             else if (cmd == "CONFIG")
@@ -216,17 +239,26 @@ namespace Roubo
 
             else if (cmd == "SETTINGS")
             {
+                cout << "Formatter Settings\n-----------------\n";
+                cout << "Border - width: " << mFormatterObject.GetBorderWidth() << "\n";
+                cout << "Border char - vertical: " << Common::SettingToString(mFormatterObject.GetVerticalBorder()) << "\n";
+                cout << "Border char - horizontal: " << Common::SettingToString(mFormatterObject.GetHorizontalBorder()) << "\n";
+                cout << "Border char - corner: " << Common::SettingToString(mFormatterObject.GetCornerBorder()) << "\n";
+                cout << "Border char - header separator: " << Common::SettingToString(mFormatterObject.GetHeaderSeparatorBorder()) << "\n";
+                cout << "Border char - row separator: " << Common::SettingToString(mFormatterObject.GetRowSeparatorBorder()) << "\n";
+                cout << "Max column width: " << mFormatterObject.GetMaxColumnWidth() << "\n";
+                cout << "Center data: " << Common::SettingToString(mFormatterObject.GetCenterData()) << "\n";
             }
 
             else if (cmd == "CLEAR")
             {
                 mTableObject.Clear();
-                cout << "\nCleared\n\n";
+                cout << "\nTable cleared\n\n";
             }
 
-            else
+            else if (!cmd.empty())
             {
-                cout << "\nInvalid command\n\n";
+                cout << "Invalid command\n";
             }
 
         } while (cin);
@@ -289,6 +321,36 @@ namespace Roubo
 
         cout << "\n";
         cin.clear();            // Prevent outer loop from exiting
+    }
+
+    void Roubo::ProcessFile()
+    {
+        using namespace std;
+        cout << "Processing file...\n";
+
+        int row = 0;
+        string line;
+        while (!(line = mFileHandlerObject.GetNextLine()).empty())
+        {
+            mParserObject->SetString(line);
+            mTableObject.AddRow();
+            cout<<"Row " << row+1 << " added...\n";
+
+            string next;
+            int column = 0;
+            while (!(next = mParserObject->GetNext()).empty())
+            {
+                while (mTableObject.GetNumberOfColumns() <= column)
+                    mTableObject.AddColumn();
+
+                mTableObject.SetCell(row, column, next);
+                column += 1;
+            }
+
+            row += 1;
+        }
+
+        cout << "Finished.\n\n";
     }
 
     bool Roubo::IsValidFilename(char* name)

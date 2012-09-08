@@ -98,6 +98,14 @@ namespace Roubo
         return mNumberOfColumns;
     }
 
+    Cell* Table::GetCell(int row_index, int column_index)
+    {
+        if (!IsValidRowIndex(row_index))
+            throw std::exception("Invalid row index");
+
+        return mRows[row_index]->GetCell(column_index);
+    }
+
     void Table::SetCell(int row_index, int column_index, std::string data)
     {
         if (!IsValidRowIndex(row_index))

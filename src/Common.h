@@ -22,8 +22,10 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 #include <iterator>
 #include "utf8.h"
+#include "Formatter.h"
 
 namespace Roubo
 {
@@ -62,6 +64,42 @@ namespace Roubo
             }
 
             return temp;
+        }
+
+        /**
+         * Pads a string to specific size
+         */
+        static std::string PadString(std::string str, unsigned int size)
+        {
+            while (str.length() < size)
+                str.append(" ");
+
+            return str;
+        }
+
+        /**
+         * Returns "YES" or "NO" from a boolean
+         */
+        static std::string SettingToString(bool value)
+        {
+            if (value)
+                return "YES";
+            else
+                return "NO";
+        }
+
+        /**
+         * Returns a more valuable string
+         */
+        static std::string SettingToString(unsigned char value)
+        {
+            std::stringstream ss;
+            ss << value;
+
+            if (value == Formatter::BLANK_CHARACTER)
+                return "NONE";
+            else
+                return ss.str();
         }
     };
 }

@@ -5,6 +5,7 @@ set (ROUBO_HEADERS Table.h
                    Common.h
                    FileHandler.h
                    Parser.h
+                   Formatter.h
                    Roubo.h)
 
 set (ROUBO_SOURCE Roubo.cpp
@@ -14,6 +15,7 @@ set (ROUBO_SOURCE Roubo.cpp
                   Table.cpp
                   FileHandler.cpp
                   Parser.cpp
+                  Formatter.cpp
                   Roubo.cpp
                   Main.cpp)
 

@@ -36,10 +36,11 @@ namespace Roubo
         std::string GetNextLine();                       // gets the next line in the file
         bool Write(std::string data);                   // writes to currently open file
         void Close();                                   // closes file and calls cleanup methods
-
+        
     private:
         std::ifstream* mReadStream;
         std::ofstream* mWriteStream;
+
         void DestroyReadStream();
         void DestroyWriteStream();
     };
