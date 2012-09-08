@@ -89,6 +89,17 @@ namespace Roubo
         }
 
         /**
+         * Replaces instances in a string with another string
+         */
+        static void StringReplace(std::string& str, std::string replacement)
+        {
+            using namespace std;
+            string::size_type pos;
+            while ((pos = str.find("\t")) != string::npos)
+                str.replace(pos, 1, replacement);
+        }
+
+        /**
          * Returns a more valuable string
          */
         static std::string SettingToString(unsigned char value)

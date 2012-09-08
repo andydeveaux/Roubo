@@ -33,9 +33,18 @@ namespace Roubo
         Parser(bool command);
         std::string GetNext();
         void SetString(std::string str);            // set new parse string
+        std::string GetCellSeparator();
         bool SetCellSeparator(std::string delimiter);
+        bool GetUsingLabelPrefix();
+        void SetUsingLabelPrefix(bool value);
+        unsigned char GetPrefixLabel();
         bool SetLabelPrefix(unsigned char prefix);
         bool IsLabelPrefix(const std::string& str);
+
+        // constants
+        static const std::string DEFAULT_CELL_SEPARATOR;
+        static const bool DEFAULT_USE_LABEL_PREFIX      = false;
+        static const unsigned char DEFAULT_LABEL_PREFIX = '@';
 
     private:
         std::string mString;

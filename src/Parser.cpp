@@ -24,13 +24,16 @@
 
 namespace Roubo
 {
+    const std::string Parser::DEFAULT_CELL_SEPARATOR = "\t";
+
     Parser::Parser(std::string str, bool command)
     {
         SetString(str);
-        mCommandMode   = command;
-        mPointerIndex  = 0;
-        mCellSeparator = "\t";
-        mLabelPrefix   = '@';
+        mCommandMode    = command;
+        mPointerIndex   = 0;
+        mCellSeparator  = DEFAULT_CELL_SEPARATOR;
+        mUseLabelPrefix = DEFAULT_USE_LABEL_PREFIX;
+        mLabelPrefix    = DEFAULT_LABEL_PREFIX;
     }
 
     Parser::Parser(bool command)
@@ -38,8 +41,9 @@ namespace Roubo
         SetString("");
         mCommandMode   = command;
         mPointerIndex  = 0;
-        mCellSeparator = "\t";
-        mLabelPrefix   = '@';
+        mCellSeparator  = DEFAULT_CELL_SEPARATOR;
+        mUseLabelPrefix = DEFAULT_USE_LABEL_PREFIX;
+        mLabelPrefix    = DEFAULT_LABEL_PREFIX;
     }
 
     std::string Parser::GetNext()
@@ -99,6 +103,16 @@ namespace Roubo
     }
 
     /**
+     * Gets the cell separator
+     */
+    std::string Parser::GetCellSeparator()
+    {
+        std::string delimiter = mCellSeparator;
+        Common::StringReplace(delimiter, "TAB");
+        return delimiter;
+    }
+
+    /**
      * Sets the cell separator string
      */
     bool Parser::SetCellSeparator(std::string delimiter)
@@ -113,6 +127,21 @@ namespace Roubo
 
         mCellSeparator = delimiter;
         return true;
+    }
+
+    bool Parser::GetUsingLabelPrefix()
+    {
+        return mUseLabelPrefix;
+    }
+
+    void Parser::SetUsingLabelPrefix(bool value)
+    {
+        mUseLabelPrefix = value;
+    }
+
+    unsigned char Parser::GetPrefixLabel()
+    {
+        return mLabelPrefix;
     }
 
     bool Parser::SetLabelPrefix(unsigned char prefix)

@@ -247,7 +247,12 @@ namespace Roubo
                 cout << "Border char - header separator: " << Common::SettingToString(mFormatterObject.GetHeaderSeparatorBorder()) << "\n";
                 cout << "Border char - row separator: " << Common::SettingToString(mFormatterObject.GetRowSeparatorBorder()) << "\n";
                 cout << "Max column width: " << mFormatterObject.GetMaxColumnWidth() << "\n";
-                cout << "Center data: " << Common::SettingToString(mFormatterObject.GetCenterData()) << "\n";
+                cout << "Center data: " << Common::SettingToString(mFormatterObject.GetCenterData()) << "\n\n";
+
+                cout << "Parser Settings\n-----------------\n";
+                cout << "Cell delimiter: " << mParserObject->GetCellSeparator() << "\n";
+                cout << "Enable header label prefix: " << Common::SettingToString(mParserObject->GetUsingLabelPrefix()) << "\n";
+                cout << "Header label prefix: " << mParserObject->GetPrefixLabel() << "\n\n";
             }
 
             else if (cmd == "CLEAR")
@@ -271,6 +276,122 @@ namespace Roubo
     {
         using namespace std;
         string input;
+
+        cout << "Leave any setting blank for default value.\n\nFormatter Settings\n-----------------\n";
+        cout << "Border - width: ";
+        getline(cin, input);
+        if (!input.empty())
+        {
+            stringstream ss;
+            unsigned int temp;
+            ss << input;
+            ss >> temp;
+            mFormatterObject.SetBorderWidth(temp);
+        }
+        else
+        {
+            mFormatterObject.SetBorderWidth(Formatter::DEFAULT_BORDER_WIDTH);
+        }
+
+        cout << "Border - vertical: ";
+        getline(cin, input);
+        if (input.empty())
+            mFormatterObject.SetVerticalBorder(Formatter::DEFAULT_VERTICAL_BORDER);
+        else
+            mFormatterObject.SetVerticalBorder(input.at(0));
+        
+        cout << "Border - horizontal: ";
+        getline(cin, input);
+        if (input.empty())
+            mFormatterObject.SetHorizontalBorder(Formatter::DEFAULT_HORIZONTAL_BORDER);
+        else
+            mFormatterObject.SetVerticalBorder(input.at(0));
+
+        cout << "Border - corner: ";
+        getline(cin, input);
+        if (input.empty())
+            mFormatterObject.SetCornerBorder(Formatter::DEFAULT_CORNER_BORDER);
+        else
+            mFormatterObject.SetCornerBorder(input.at(0));
+
+        cout << "Border - header separator: ";
+        getline(cin, input);
+        if (input.empty())
+            mFormatterObject.SetHeaderSeparatorBorder(Formatter::DEFAULT_HEADER_SEPARATOR_BORDER);
+        else
+            mFormatterObject.SetHeaderSeparatorBorder(input.at(0));
+
+        cout << "Border - row separator: ";
+        getline(cin, input);
+        if (input.empty())
+            mFormatterObject.SetRowSeparatorBorder(Formatter::DEFAULT_ROW_SEPARATOR_BORDER);
+        else
+            mFormatterObject.SetHeaderSeparatorBorder(input.at(0));
+
+        cout << "Max column width: ";
+        getline(cin, input);
+        if (input.empty())
+        {
+            mFormatterObject.SetMaxColumnWidth(Formatter::DEFAULT_MAX_COLUMN_WIDTH);
+        }
+        else
+        {
+            stringstream ss;
+            unsigned int temp;
+            ss << input;
+            ss >> temp;
+            mFormatterObject.SetMaxColumnWidth(temp);
+        }
+
+        cout << "Center data (y/n): ";
+        getline(cin, input);
+        if (input.empty())
+        {
+            mFormatterObject.CenterData(Formatter::DEFAULT_CENTER_DATA);
+        }
+        else
+        {
+            if (Common::ToUpper(input) == "Y")
+                mFormatterObject.CenterData(true);
+            else
+                mFormatterObject.CenterData(false);
+        }
+
+        cout << "\n\n";
+        cout << "Parser Settings\n-----------------\n";
+        cout << "Cell delimiter: ";
+        getline(cin, input);
+        if (input.empty())
+            mParserObject->SetCellSeparator(Parser::DEFAULT_CELL_SEPARATOR);
+        else
+            mParserObject->SetCellSeparator(input);
+
+        cout << "Use header label prefix (y/n): ";
+        getline(cin, input);
+        if (input.empty())
+        {
+            mParserObject->SetUsingLabelPrefix(Parser::DEFAULT_USE_LABEL_PREFIX);
+            mParserObject->SetLabelPrefix(Parser::DEFAULT_LABEL_PREFIX);
+        }
+        else
+        {
+            if (Common::ToUpper(input) == "Y")
+            {
+                mParserObject->SetUsingLabelPrefix(true);
+                cout << "Header label prefix: ";
+                getline(cin, input);
+                if (input.empty())
+                    mParserObject->SetLabelPrefix(Parser::DEFAULT_LABEL_PREFIX);
+                else
+                    mParserObject->SetLabelPrefix(input.at(0));
+            }
+            else
+            {
+                mParserObject->SetUsingLabelPrefix(false);
+            }
+        }
+
+        cout << "\n\n";
     }
 
     /**

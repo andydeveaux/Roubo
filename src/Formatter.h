@@ -31,7 +31,7 @@ namespace Roubo
     public:
         Formatter();
 
-        const static unsigned char BLANK_CHARACTER                 = '\0';
+        const static unsigned char BLANK_CHARACTER = '\0';
 
         void SetVerticalBorder(unsigned char value);
         void SetHorizontalBorder(unsigned char value);
@@ -56,6 +56,17 @@ namespace Roubo
         void Output(Table& t);                              // standard output
         void Output(FileHandler& fh, Table& t);             // file output
 
+        // constants
+        const static unsigned char DEFAULT_VERTICAL_BORDER         = '|';
+        const static unsigned char DEFAULT_HORIZONTAL_BORDER       = '-';
+        const static unsigned char DEFAULT_CORNER_BORDER           = '+';
+        const static unsigned char DEFAULT_HEADER_SEPARATOR_BORDER = '-';
+        const static unsigned char DEFAULT_ROW_SEPARATOR_BORDER    = BLANK_CHARACTER;
+
+        const static unsigned int DEFAULT_MAX_COLUMN_WIDTH = 0;
+        const static unsigned int DEFAULT_BORDER_WIDTH     = 1;
+        const static bool DEFAULT_CENTER_DATA              = false;
+
     private:
         unsigned char mVerticalBorder;
         unsigned char mHorizontalBorder;
@@ -74,16 +85,5 @@ namespace Roubo
         std::string GetRow(int index);
         void Pad(std::string& data);
         void Center(std::string& data);
-
-        // internal constants
-        const static unsigned char DEFAULT_VERTICAL_BORDER         = '|';
-        const static unsigned char DEFAULT_HORIZONTAL_BORDER       = '-';
-        const static unsigned char DEFAULT_CORNER_BORDER           = '+';
-        const static unsigned char DEFAULT_HEADER_SEPARATOR_BORDER = '-';
-        const static unsigned char DEFAULT_ROW_SEPARATOR_BORDER    = BLANK_CHARACTER;
-
-        const static unsigned int DEFAULT_MAX_COLUMN_WIDTH = 0;
-        const static unsigned int DEFAULT_BORDER_WIDTH     = 1;
-        const static bool DEFAULT_CENTER_DATA              = false;
     };
 }

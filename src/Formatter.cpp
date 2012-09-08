@@ -159,7 +159,7 @@ namespace Roubo
         int num_of_columns = t.GetNumberOfColumns();
         // Store column widths so they don't have to recalculated for every row
         unsigned int* column_widths = new unsigned int[num_of_columns];
-        unsigned int table_width = (mBorderWidth * num_of_columns);
+        unsigned int table_width = (mBorderWidth * num_of_columns) + (2 * num_of_columns);
         for (int col=0; col<num_of_columns; col++)
         {
             column_widths[col] = CalculateColumnWidth(col);
@@ -189,13 +189,15 @@ namespace Roubo
         {
             Row* data = mTablePointer->GetRow(row);
 
-            // Careful row formatting goes here
+            cout << vertical;
+            // Careful row formatting goes here;
             for (int col=0; col<num_of_columns; col++)
             {
+                cout << " ";    // heading pad
                 cout << Common::PadString(data->GetCell(col)->GetData(), column_widths[col]);
+                cout << " ";    // trailing pad
                 cout << vertical;
             }
-
             cout << "\n";
         }
 
