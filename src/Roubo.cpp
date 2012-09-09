@@ -326,7 +326,7 @@ namespace Roubo
         if (input.empty())
             mFormatterObject.SetRowSeparatorBorder(Formatter::DEFAULT_ROW_SEPARATOR_BORDER);
         else
-            mFormatterObject.SetHeaderSeparatorBorder(input.at(0));
+            mFormatterObject.SetRowSeparatorBorder(input.at(0));
 
         cout << "Max column width: ";
         getline(cin, input);
@@ -347,14 +347,14 @@ namespace Roubo
         getline(cin, input);
         if (input.empty())
         {
-            mFormatterObject.CenterData(Formatter::DEFAULT_CENTER_DATA);
+            mFormatterObject.SetCenterData(Formatter::DEFAULT_CENTER_DATA);
         }
         else
         {
             if (Common::ToUpper(input) == "Y")
-                mFormatterObject.CenterData(true);
+                mFormatterObject.SetCenterData(true);
             else
-                mFormatterObject.CenterData(false);
+                mFormatterObject.SetCenterData(false);
         }
 
         cout << "\n\n";

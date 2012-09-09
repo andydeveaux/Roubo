@@ -23,6 +23,7 @@
 
 #include <string>
 #include "utf8.h"
+#include "Row.h"
 
 namespace Roubo
 {
@@ -39,7 +40,7 @@ namespace Roubo
         void SetUsingLabelPrefix(bool value);
         unsigned char GetPrefixLabel();
         bool SetLabelPrefix(unsigned char prefix);
-        bool IsLabelPrefix(const std::string& str);
+        bool IsHeaderRow(Row& row, int index);
 
         // constants
         static const std::string DEFAULT_CELL_SEPARATOR;

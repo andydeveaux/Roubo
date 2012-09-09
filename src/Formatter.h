@@ -41,7 +41,7 @@ namespace Roubo
         
         void SetMaxColumnWidth(unsigned int value);
         void SetBorderWidth(unsigned int value);
-        void CenterData(bool center);
+        void SetCenterData(bool center);
 
         unsigned char GetVerticalBorder();
         unsigned char GetHorizontalBorder();
@@ -82,7 +82,9 @@ namespace Roubo
         std::string mHorizontalBorderStr;
         std::string mCornerBorderStr;
         std::string mHeaderBorderStr;
-        std::string mRowBorderStr;
+        // No point in regenerating these everytime
+        std::string mCachedRowBorder;
+        std::string mCachedTopBottomBorder;
         
         unsigned int mMaxColumnWidth;
         bool mCenterData;
@@ -92,9 +94,12 @@ namespace Roubo
         unsigned int CalculateColumnWidth(int column_index);    // examines cell data and determines column width
         unsigned int* GetColumnWidths();                        // stores the column widths and returns the pointer to it
 
-        void GenerateBorders();
-        std::string& Pad(std::string& data, unsigned int size);
+        void GenerateBorders(unsigned int* column_widths);
+        std::string  RepeatString(std::string& str, unsigned int times);
+        std::string& Pad(std::string& str, unsigned int size);
         std::string& Center(std::string& data, unsigned int size);
         std::string  GenerateRowString(Row* row, const unsigned int* widths);
+
+        static const unsigned int CELL_PADDING = 2;             // isn't actually used aside from eliminating magic numbers
     };
 }

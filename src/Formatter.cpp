@@ -145,7 +145,7 @@ namespace Roubo
         return mCenterData;
     }
 
-    void Formatter::CenterData(bool center)
+    void Formatter::SetCenterData(bool center)
     {
         mCenterData = center;
     }
@@ -156,21 +156,50 @@ namespace Roubo
         using namespace std;
 
         mTablePointer = &t;
-        GenerateBorders();
         unsigned int* column_widths = GetColumnWidths();
+        GenerateBorders(column_widths);
         int num_of_rows = mTablePointer->GetNumberOfRows();
+
+        cout << mCachedTopBottomBorder;
+
         for (int i=0; i<num_of_rows; i++)
         {
             cout << GenerateRowString(mTablePointer->GetRow(i), column_widths);
         }
+        
+        // Don't forget the outer border
+        if (mRowSeparatorBorder == BLANK_CHARACTER)
+        {
+            int num_of_columns = mTablePointer->GetNumberOfColumns();
+            for (int i=0; i<num_of_columns; i++)
+            {
+                 cout << mCornerBorderStr
+                      << RepeatString(mHorizontalBorderStr, column_widths[i] + 2);
+            }
 
+            cout << mCornerBorderStr + "\n";
+        }
         delete[] column_widths;
     }
 
     void Formatter::Output(FileHandler& fh, Table& t)
     {
+        using namespace std;
+
         mTablePointer = &t;
-        int num_of_rows = t.GetNumberOfRows();
+        unsigned int* column_widths = GetColumnWidths();
+        GenerateBorders(column_widths);
+        int num_of_rows = mTablePointer->GetNumberOfRows();
+        try
+        {
+            fh.Write(mCachedTopBottomBorder);
+        }
+        catch (exception& e)
+        {
+            cout << e.what() << "\n";
+        }
+
+        delete[] column_widths;
     }
 
     /* Private methods */
@@ -198,16 +227,34 @@ namespace Roubo
         return result;
     }
 
+    /**
+     * Calculates all of the column widths, and the entire table width
+     */
     unsigned int* Formatter::GetColumnWidths()
     {
         int num_of_rows = mTablePointer->GetNumberOfRows();
         int num_of_columns = mTablePointer->GetNumberOfColumns();
+
         // Store column widths so they don't have to be recalculated for every row
         unsigned int* column_widths = new unsigned int[num_of_columns];
         for (int col=0; col<num_of_columns; col++)
+        {
             column_widths[col] = CalculateColumnWidth(col);
+        }
 
         return column_widths;
+    }
+
+    /**
+     * Repeat a string a set number of times
+     */
+    std::string Formatter::RepeatString(std::string& str, unsigned int times)
+    {
+        std::string output = "";
+        for (unsigned int i=0; i<times; i++)
+            output.append(str);
+
+        return output;
     }
 
     std::string& Formatter::Pad(std::string& str, unsigned int size)
@@ -238,6 +285,7 @@ namespace Roubo
         {
             string data = row->GetCell(col)->GetData();
             unsigned int length = data.length();
+            // Wordwrap
             if (constrained && length > mMaxColumnWidth)
             {
                 row_data_queue.push_back(data.substr(mMaxColumnWidth, (length - mMaxColumnWidth) + 1));
@@ -245,7 +293,7 @@ namespace Roubo
                 output.append(" " + data.substr(0, mMaxColumnWidth) + " ")
                       .append(mVerticalBorderStr);
             }
-
+            // No wordwrap
             else
             {
                 output.append(" " + Pad(data, widths[col]) + " ")
@@ -259,7 +307,7 @@ namespace Roubo
             Row r = Row(num_of_columns);
             for (int col=0; col<num_of_columns; col++)
             {
-                int front = (!row_index_queue.empty() ? row_index_queue.front() : -1);
+                int front = (!row_index_queue.empty() ? row_index_queue.front() : -1);          // If the queues are empty, col will never reach -1
                 if (col != front)
                 {
                     r.AddCell();
@@ -281,28 +329,57 @@ namespace Roubo
             output.append("\n");
         }
 
+        // Row separator
+        if (mRowSeparatorBorder != BLANK_CHARACTER)
+            output.append(mCachedRowBorder);
+
         return output;
     }
 
-    void Formatter::GenerateBorders()
+    /**
+     * @date 9/9/2012
+     * Optimized this function a bit better and made it look less ugly, it also now generates border caches
+     */
+    void Formatter::GenerateBorders(unsigned int* column_widths)
     {
         using namespace std;
-        mVerticalBorderStr   = "";
-        mHorizontalBorderStr = "";
-        mCornerBorderStr     = "";
+
+        stringstream vertical, horizontal, corner, row, header;
         for (unsigned int i=0; i<mBorderWidth; i++)
         {
-            stringstream ss;
-            ss << mVerticalBorder;
-            mVerticalBorderStr.append(ss.str());
-            ss.str("");
-
-            ss << mHorizontalBorder;
-            mHorizontalBorderStr.append(ss.str());
-            ss.str("");
-
-            ss << mCornerBorder;
-            mCornerBorderStr.append(ss.str());
+            vertical   << mVerticalBorder;
+            horizontal << mHorizontalBorder;
+            corner     << mCornerBorder;
+            row        << mRowSeparatorBorder;
+            header     << mHeaderSeparatorBorder;
         }
+
+        mVerticalBorderStr   = vertical.str();
+        mHorizontalBorderStr = horizontal.str();
+        mCornerBorderStr     = corner.str();
+        mHeaderBorderStr     = row.str();
+
+        // Caching starts here
+        int num_of_columns = mTablePointer->GetNumberOfColumns();
+        mCachedRowBorder = mCornerBorderStr;
+        mCachedTopBottomBorder = mCornerBorderStr;
+
+        for (int i=0; i<num_of_columns; i++)
+        {
+            mCachedRowBorder.append(RepeatString(row.str(), column_widths[i] + CELL_PADDING))
+                            .append(mCornerBorderStr);
+
+            mCachedTopBottomBorder.append(RepeatString(horizontal.str(), column_widths[i] + CELL_PADDING))
+                                  .append(mCornerBorderStr);
+        }
+
+        for (unsigned int i=1; i<mBorderWidth; i++)
+        {
+            mCachedRowBorder.append("\n" + mCachedRowBorder);
+            mCachedTopBottomBorder.append("\n" + mCachedTopBottomBorder);
+        }
+
+        mCachedRowBorder.append("\n");
+        mCachedTopBottomBorder.append("\n");
     }
 }
