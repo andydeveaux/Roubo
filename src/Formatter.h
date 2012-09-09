@@ -68,22 +68,33 @@ namespace Roubo
         const static bool DEFAULT_CENTER_DATA              = false;
 
     private:
+        // Border settings
         unsigned char mVerticalBorder;
         unsigned char mHorizontalBorder;
         unsigned char mCornerBorder;
         unsigned char mHeaderSeparatorBorder;
         unsigned char mRowSeparatorBorder;
+
+        unsigned int mBorderWidth;
+
+        // Generated border strings (width applied)
+        std::string mVerticalBorderStr;
+        std::string mHorizontalBorderStr;
+        std::string mCornerBorderStr;
+        std::string mHeaderBorderStr;
+        std::string mRowBorderStr;
         
         unsigned int mMaxColumnWidth;
-        unsigned int mBorderWidth;
         bool mCenterData;
 
-        Table* mTablePointer;                               // most recent table pointer
+        Table* mTablePointer;                                   // most recent table pointer
 
         unsigned int CalculateColumnWidth(int column_index);    // examines cell data and determines column width
+        unsigned int* GetColumnWidths();                        // stores the column widths and returns the pointer to it
 
-        std::string GetRow(int index);
-        void Pad(std::string& data);
-        void Center(std::string& data);
+        void GenerateBorders();
+        std::string& Pad(std::string& data, unsigned int size);
+        std::string& Center(std::string& data, unsigned int size);
+        std::string  GenerateRowString(Row* row, const unsigned int* widths);
     };
 }

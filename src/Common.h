@@ -67,17 +67,6 @@ namespace Roubo
         }
 
         /**
-         * Pads a string to specific size
-         */
-        static std::string PadString(std::string str, unsigned int size)
-        {
-            while (str.length() < size)
-                str.append(" ");
-
-            return str;
-        }
-
-        /**
          * Returns "YES" or "NO" from a boolean
          */
         static std::string SettingToString(bool value)

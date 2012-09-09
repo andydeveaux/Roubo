@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <deque>
 #include "Formatter.h"
 #include "Parser.h"
 #include "Common.h"
@@ -155,50 +156,12 @@ namespace Roubo
         using namespace std;
 
         mTablePointer = &t;
-        int num_of_rows = t.GetNumberOfRows();
-        int num_of_columns = t.GetNumberOfColumns();
-        // Store column widths so they don't have to recalculated for every row
-        unsigned int* column_widths = new unsigned int[num_of_columns];
-        unsigned int table_width = (mBorderWidth * num_of_columns) + (2 * num_of_columns);
-        for (int col=0; col<num_of_columns; col++)
+        GenerateBorders();
+        unsigned int* column_widths = GetColumnWidths();
+        int num_of_rows = mTablePointer->GetNumberOfRows();
+        for (int i=0; i<num_of_rows; i++)
         {
-            column_widths[col] = CalculateColumnWidth(col);
-            table_width += column_widths[col];
-        }
-
-        // Prepare the border strings
-        string vertical;
-        string horizontal;
-        string corner;
-        for (unsigned int i=0; i<mBorderWidth; i++)
-        {
-            stringstream ss;
-            ss << mVerticalBorder;
-            vertical.append(ss.str());
-            ss.str("");
-
-            ss << mHorizontalBorder;
-            horizontal.append(ss.str());
-            ss.str("");
-
-            ss << mCornerBorder;
-            corner.append(ss.str());
-        }
-
-        for (int row=0; row<num_of_rows; row++)
-        {
-            Row* data = mTablePointer->GetRow(row);
-
-            cout << vertical;
-            // Careful row formatting goes here;
-            for (int col=0; col<num_of_columns; col++)
-            {
-                cout << " ";    // heading pad
-                cout << Common::PadString(data->GetCell(col)->GetData(), column_widths[col]);
-                cout << " ";    // trailing pad
-                cout << vertical;
-            }
-            cout << "\n";
+            cout << GenerateRowString(mTablePointer->GetRow(i), column_widths);
         }
 
         delete[] column_widths;
@@ -235,16 +198,111 @@ namespace Roubo
         return result;
     }
 
-    std::string Formatter::GetRow(int index)
+    unsigned int* Formatter::GetColumnWidths()
     {
-        std::string rowstr;
+        int num_of_rows = mTablePointer->GetNumberOfRows();
         int num_of_columns = mTablePointer->GetNumberOfColumns();
-        Row* r = mTablePointer->GetRow(index);
-        for (int i=0; i<num_of_columns; i++)
+        // Store column widths so they don't have to be recalculated for every row
+        unsigned int* column_widths = new unsigned int[num_of_columns];
+        for (int col=0; col<num_of_columns; col++)
+            column_widths[col] = CalculateColumnWidth(col);
+
+        return column_widths;
+    }
+
+    std::string& Formatter::Pad(std::string& str, unsigned int size)
+    {
+        while (str.length() < size)
+            str.append(" ");
+
+        return str;
+    }
+
+    std::string& Formatter::Center(std::string& str, unsigned int size)
+    {
+        return str;
+    }
+
+    std::string Formatter::GenerateRowString(Row* row, const unsigned int* widths)
+    {
+        using namespace std;
+
+        string output = mVerticalBorderStr;
+        // Queues used for processing multiple lines
+        deque<string> row_data_queue;
+        deque<int>    row_index_queue;
+        bool constrained = (mMaxColumnWidth != 0);         // Might be a bit faster in the loop
+
+        int num_of_columns = mTablePointer->GetNumberOfColumns();        
+        for (int col=0; col<num_of_columns; col++)
         {
-            rowstr.append(r->GetCell(i)->GetData());
+            string data = row->GetCell(col)->GetData();
+            unsigned int length = data.length();
+            if (constrained && length > mMaxColumnWidth)
+            {
+                row_data_queue.push_back(data.substr(mMaxColumnWidth, (length - mMaxColumnWidth) + 1));
+                row_index_queue.push_back(col);
+                output.append(" " + data.substr(0, mMaxColumnWidth) + " ")
+                      .append(mVerticalBorderStr);
+            }
+
+            else
+            {
+                output.append(" " + Pad(data, widths[col]) + " ")
+                      .append(mVerticalBorderStr);
+            }
         }
 
-        return rowstr.append("\n");
+        // Process queues
+        if (!row_index_queue.empty())
+        {
+            Row r = Row(num_of_columns);
+            for (int col=0; col<num_of_columns; col++)
+            {
+                int front = (!row_index_queue.empty() ? row_index_queue.front() : -1);
+                if (col != front)
+                {
+                    r.AddCell();
+                }
+                else
+                {
+                    r.AddCell();
+                    r.SetCell(col, row_data_queue.front());
+                    row_data_queue.pop_front();
+                    row_index_queue.pop_front();
+                }
+            }
+
+            // Hooray for recursion
+            output.append("\n" + GenerateRowString(&r, widths));
+        }
+        else
+        {
+            output.append("\n");
+        }
+
+        return output;
+    }
+
+    void Formatter::GenerateBorders()
+    {
+        using namespace std;
+        mVerticalBorderStr   = "";
+        mHorizontalBorderStr = "";
+        mCornerBorderStr     = "";
+        for (unsigned int i=0; i<mBorderWidth; i++)
+        {
+            stringstream ss;
+            ss << mVerticalBorder;
+            mVerticalBorderStr.append(ss.str());
+            ss.str("");
+
+            ss << mHorizontalBorder;
+            mHorizontalBorderStr.append(ss.str());
+            ss.str("");
+
+            ss << mCornerBorder;
+            mCornerBorderStr.append(ss.str());
+        }
     }
 }
