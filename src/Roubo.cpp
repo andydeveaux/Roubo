@@ -223,12 +223,12 @@ namespace Roubo
                         continue;
                     }
 
-                    mFormatterObject.Output(mFileHandlerObject, mTableObject);
+                    mFormatterObject.Output(mFileHandlerObject, mTableObject, mParserObject);
                 }
 
                 else
                 {
-                    mFormatterObject.Output(mTableObject);
+                    mFormatterObject.Output(mTableObject, mParserObject);
                 }
             }
 
@@ -305,7 +305,7 @@ namespace Roubo
         if (input.empty())
             mFormatterObject.SetHorizontalBorder(Formatter::DEFAULT_HORIZONTAL_BORDER);
         else
-            mFormatterObject.SetVerticalBorder(input.at(0));
+            mFormatterObject.SetHorizontalBorder(input.at(0));
 
         cout << "Border - corner: ";
         getline(cin, input);
@@ -405,11 +405,11 @@ namespace Roubo
         string input;
         Parser data_parser(false);
 
-        int row = 0;
+        int row = mTableObject.GetNumberOfRows();
         bool loop = true;
         do
         {
-            cout << mTableObject.GetNumberOfRows();
+            cout << mTableObject.GetNumberOfRows() + 1;
             cout << " ::> ";
             getline(cin, input);
 

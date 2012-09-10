@@ -158,9 +158,9 @@ namespace Roubo
         return true;
     }
 
-    bool Parser::IsHeaderRow(Row& row, int index)
+    bool Parser::IsHeaderRow(Row* row, int index)
     {
-        if ((mUseLabelPrefix && row.GetCell(0)->GetData().at(0) == mLabelPrefix) || (!mUseLabelPrefix && index == 0))
+        if ((mUseLabelPrefix && row->GetCell(0)->GetData().at(0) == mLabelPrefix) || (!mUseLabelPrefix && index == 0))
             return true;
         
         return false;

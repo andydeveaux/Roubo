@@ -23,6 +23,7 @@
 
 #include "Table.h"
 #include "FileHandler.h"
+#include "Parser.h"
 
 namespace Roubo
 {
@@ -53,8 +54,8 @@ namespace Roubo
         unsigned int GetBorderWidth();
         bool GetCenterData();
 
-        void Output(Table& t);                              // standard output
-        void Output(FileHandler& fh, Table& t);             // file output
+        void Output(Table& t, Parser* p);                              // standard output
+        void Output(FileHandler& fh, Table& t, Parser* p);             // file output
 
         // constants
         const static unsigned char DEFAULT_VERTICAL_BORDER         = '|';
@@ -85,6 +86,7 @@ namespace Roubo
         // No point in regenerating these everytime
         std::string mCachedRowBorder;
         std::string mCachedTopBottomBorder;
+        std::string mCachedHeaderBorder;
         
         unsigned int mMaxColumnWidth;
         bool mCenterData;
@@ -98,7 +100,7 @@ namespace Roubo
         std::string  RepeatString(std::string& str, unsigned int times);
         std::string& Pad(std::string& str, unsigned int size);
         std::string& Center(std::string& data, unsigned int size);
-        std::string  GenerateRowString(Row* row, const unsigned int* widths);
+        std::string  GenerateRowString(Row* row, const unsigned int* widths, bool is_header = false, bool is_prefix_header = false);
 
         static const unsigned int CELL_PADDING = 2;             // isn't actually used aside from eliminating magic numbers
     };

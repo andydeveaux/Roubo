@@ -150,39 +150,40 @@ namespace Roubo
         mCenterData = center;
     }
 
+
     /* Output */
-    void Formatter::Output(Table& t)
+    void Formatter::Output(Table& t, Parser* p)
     {
         using namespace std;
 
         mTablePointer = &t;
+        //mParserPointer = p;
         unsigned int* column_widths = GetColumnWidths();
         GenerateBorders(column_widths);
         int num_of_rows = mTablePointer->GetNumberOfRows();
 
         cout << mCachedTopBottomBorder;
 
-        for (int i=0; i<num_of_rows; i++)
+        for (int i=0, last=num_of_rows-1; i<num_of_rows; i++)
         {
-            cout << GenerateRowString(mTablePointer->GetRow(i), column_widths);
+            Row* r = mTablePointer->GetRow(i);
+            bool is_header = p->IsHeaderRow(r, i);
+            cout << GenerateRowString(r, column_widths, is_header, is_header && p->GetUsingLabelPrefix());
+
+            if (is_header)
+                cout << mCachedHeaderBorder;
+            
+            else if (mRowSeparatorBorder != BLANK_CHARACTER && i != last)
+                cout << mCachedRowBorder;
         }
         
         // Don't forget the outer border
-        if (mRowSeparatorBorder == BLANK_CHARACTER)
-        {
-            int num_of_columns = mTablePointer->GetNumberOfColumns();
-            for (int i=0; i<num_of_columns; i++)
-            {
-                 cout << mCornerBorderStr
-                      << RepeatString(mHorizontalBorderStr, column_widths[i] + 2);
-            }
+        cout << mCachedTopBottomBorder << "\n";
 
-            cout << mCornerBorderStr + "\n";
-        }
         delete[] column_widths;
     }
 
-    void Formatter::Output(FileHandler& fh, Table& t)
+    void Formatter::Output(FileHandler& fh, Table& t, Parser* p)
     {
         using namespace std;
 
@@ -193,12 +194,29 @@ namespace Roubo
         try
         {
             fh.Write(mCachedTopBottomBorder);
+
+            for (int i=0, last=num_of_rows-1; i<num_of_rows; i++)
+            {
+                Row* r = mTablePointer->GetRow(i);
+                bool is_header = p->IsHeaderRow(r, i);
+                fh.Write(GenerateRowString(r, column_widths, is_header, is_header && p->GetUsingLabelPrefix()) );
+
+                if (is_header)
+                    fh.Write(mCachedHeaderBorder);
+            
+                else if (mRowSeparatorBorder != BLANK_CHARACTER && i != last)
+                    fh.Write(mCachedRowBorder);
+            }
+
+            // Don't forget the outer border
+            fh.Write(mCachedTopBottomBorder + "\n");
         }
         catch (exception& e)
         {
             cout << e.what() << "\n";
         }
 
+        cout << "Table generated to file successfully.\n\n";
         delete[] column_widths;
     }
 
@@ -228,7 +246,7 @@ namespace Roubo
     }
 
     /**
-     * Calculates all of the column widths, and the entire table width
+     * Calculates all of the column widths
      */
     unsigned int* Formatter::GetColumnWidths()
     {
@@ -257,6 +275,9 @@ namespace Roubo
         return output;
     }
 
+    /**
+     * Trail padding method
+     */
     std::string& Formatter::Pad(std::string& str, unsigned int size)
     {
         while (str.length() < size)
@@ -265,12 +286,25 @@ namespace Roubo
         return str;
     }
 
+    /**
+     * String centering method
+     */
     std::string& Formatter::Center(std::string& str, unsigned int size)
     {
+        /* @note Formula for calculating center: floor( (ceil(cell_width / 2.f) - (str_length / 2.f)) ) */
+        int length = str.length();
+        int center_index = (int)floor( (ceil(size / 2.f) - (length / 2.f)) );
+        
+        std::string header_space;
+        for (int i=0; i<center_index; i++)
+            header_space.append(" ");
+
+        str = header_space + str;
+        Pad(str, size);
         return str;
     }
 
-    std::string Formatter::GenerateRowString(Row* row, const unsigned int* widths)
+    std::string Formatter::GenerateRowString(Row* row, const unsigned int* widths, bool is_header, bool is_prefix_header)
     {
         using namespace std;
 
@@ -283,7 +317,12 @@ namespace Roubo
         int num_of_columns = mTablePointer->GetNumberOfColumns();        
         for (int col=0; col<num_of_columns; col++)
         {
-            string data = row->GetCell(col)->GetData();
+            string data;
+            if (is_prefix_header && col == 0)
+                data = row->GetCell(col)->GetData().substr(1);
+            else
+                data = row->GetCell(col)->GetData();
+
             unsigned int length = data.length();
             // Wordwrap
             if (constrained && length > mMaxColumnWidth)
@@ -296,8 +335,12 @@ namespace Roubo
             // No wordwrap
             else
             {
-                output.append(" " + Pad(data, widths[col]) + " ")
-                      .append(mVerticalBorderStr);
+                if (is_header || mCenterData)
+                    output.append(" " + Center(data, widths[col]) + " ")
+                          .append(mVerticalBorderStr);
+                else
+                    output.append(" " + Pad(data, widths[col]) + " ")
+                          .append(mVerticalBorderStr);
             }
         }
 
@@ -327,11 +370,17 @@ namespace Roubo
         else
         {
             output.append("\n");
-        }
 
-        // Row separator
-        if (mRowSeparatorBorder != BLANK_CHARACTER)
-            output.append(mCachedRowBorder);
+            // Header separator
+            /*
+            if (header)
+                output.append(mCachedHeaderBorder);
+
+            // Row separator
+            else if (mRowSeparatorBorder != BLANK_CHARACTER)
+                output.append(mCachedRowBorder);
+                */
+        }
 
         return output;
     }
@@ -345,41 +394,47 @@ namespace Roubo
         using namespace std;
 
         stringstream vertical, horizontal, corner, row, header;
+        horizontal << mHorizontalBorder;
+        header     << mHeaderSeparatorBorder;
+        row        << mRowSeparatorBorder;
         for (unsigned int i=0; i<mBorderWidth; i++)
         {
             vertical   << mVerticalBorder;
-            horizontal << mHorizontalBorder;
             corner     << mCornerBorder;
-            row        << mRowSeparatorBorder;
-            header     << mHeaderSeparatorBorder;
         }
 
         mVerticalBorderStr   = vertical.str();
         mHorizontalBorderStr = horizontal.str();
         mCornerBorderStr     = corner.str();
-        mHeaderBorderStr     = row.str();
+        mHeaderBorderStr     = header.str();
 
         // Caching starts here
         int num_of_columns = mTablePointer->GetNumberOfColumns();
-        mCachedRowBorder = mCornerBorderStr;
-        mCachedTopBottomBorder = mCornerBorderStr;
 
-        for (int i=0; i<num_of_columns; i++)
+        // Border width
+        mCachedRowBorder       = "";
+        mCachedTopBottomBorder = "";
+        mCachedHeaderBorder    = "";
+        for (unsigned int i=0; i<mBorderWidth; i++)
         {
-            mCachedRowBorder.append(RepeatString(row.str(), column_widths[i] + CELL_PADDING))
-                            .append(mCornerBorderStr);
+            mCachedRowBorder.append(mCornerBorderStr);
+            mCachedTopBottomBorder.append(mCornerBorderStr);
+            mCachedHeaderBorder.append(mCornerBorderStr);
+            for (int j=0; j<num_of_columns; j++)
+            {
+                mCachedRowBorder.append(RepeatString(row.str(), column_widths[j] + CELL_PADDING))
+                                .append(mCornerBorderStr);
 
-            mCachedTopBottomBorder.append(RepeatString(horizontal.str(), column_widths[i] + CELL_PADDING))
-                                  .append(mCornerBorderStr);
+                mCachedTopBottomBorder.append(RepeatString(horizontal.str(), column_widths[j] + CELL_PADDING))
+                                      .append(mCornerBorderStr);
+
+                mCachedHeaderBorder.append(RepeatString(header.str(), column_widths[j] + CELL_PADDING))
+                                   .append(mCornerBorderStr);
+            }
+
+            mCachedRowBorder.append("\n");
+            mCachedTopBottomBorder.append("\n");
+            mCachedHeaderBorder.append("\n");
         }
-
-        for (unsigned int i=1; i<mBorderWidth; i++)
-        {
-            mCachedRowBorder.append("\n" + mCachedRowBorder);
-            mCachedTopBottomBorder.append("\n" + mCachedTopBottomBorder);
-        }
-
-        mCachedRowBorder.append("\n");
-        mCachedTopBottomBorder.append("\n");
     }
 }

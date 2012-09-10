@@ -40,7 +40,7 @@ namespace Roubo
         void SetUsingLabelPrefix(bool value);
         unsigned char GetPrefixLabel();
         bool SetLabelPrefix(unsigned char prefix);
-        bool IsHeaderRow(Row& row, int index);
+        bool IsHeaderRow(Row* row, int index);
 
         // constants
         static const std::string DEFAULT_CELL_SEPARATOR;

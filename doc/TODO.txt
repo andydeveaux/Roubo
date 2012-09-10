@@ -1,19 +1,30 @@
-TODO v1.0
+TODO v1.1
 =============
 
-9/3/2012
+Last Updated: 9/9/2012
+
+
+[X] Fix borders when splitting rows into multiple lines
+[X] Fix border width
+[X] Fix crash when loading a file and then entering manual input; happens when using output command
+[X] Fix eliminating head prefixes from every cell / out of range crash
+[X] Fix setting of vertical border
+
 -------------
-[ ] Define data structures and behaviors
+[X] Define data structures and behaviors
     + table
     + row
     + cell
     + column
-[ ] CLI
-[ ] Parser
+[X] CLI
+[X] Parser
     + CLI commands
     + file/keyboard data
-[ ] Formatter
-[ ] Formatter Configuration
+[X] Formatter
+    + headers
+    + center data
+    + write to file
+[X] Formatter Configuration
     + border width
     ? maximum table width
     + maximum column width
