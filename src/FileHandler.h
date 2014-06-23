@@ -3,7 +3,7 @@
  * @brief Defintion of the Column class
  *
  * ------------------------------------------------------------------------
- * Copyright 2012 Syroglyph
+ * Copyright 2012 Andy Deveaux
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
