@@ -1,6 +1,7 @@
 [Tt]humbs.db
 *.DS_Store
 cmake/
+roubo*.zip
 
 *.user
 *.aps
