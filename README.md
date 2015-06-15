@@ -1,5 +1,1 @@
-Roubo
-=====
-
-An experimental, flexible cross-platform text table generator written in C++. If it sucks then it'll 
-serve as a snapshot of then and now.
+Roubo was an experimental, flexible cross-platform text table generator that I made back in 2012. It was my first real C++ application written from scratch.
